@@ -45,6 +45,19 @@ class TaskServices {
         );
   }
 
+  // method to update a task by id
+  Future<bool> updateTask (TaskModel task) async {
+    final Map<String, dynamic> data = task.toJson();
+
+    try {
+      await _taslCollection.doc(task.id).update(data);
+      return true;
+    } catch (error) {
+      print("Error updating task: $error");
+      return false;
+    }
+  }
+
   // delete a task by id
   Future<bool> deleteTask(String id) async {
     try {
