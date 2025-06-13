@@ -1,0 +1,32 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:task_app_with_firestore/models/task_model.dart';
+
+class TaskServices {
+  // reference to the collection
+  final CollectionReference _taslCollection =
+      FirebaseFirestore.instance.collection('tasks');
+
+  // method to add a task to firestore
+  Future<bool> addTask(String taskName) async {
+    try {
+      // create a new task document with the task name
+      final task = TaskModel(
+        id: "",
+        name: taskName,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        isUpdated: false,
+      );
+
+      // convert the task to a map
+      final Map<String, dynamic> data = task.toJson();
+
+      // add the task to the collection
+      await _taslCollection.add(data);
+      return true;
+    } catch (e) {
+      print("Error adding task: $e");
+      return false;
+    }
+  }
+}
