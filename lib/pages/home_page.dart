@@ -91,7 +91,18 @@ class _HomePageState extends State<HomePage> {
                   subtitle: Text("Created at: ${task.createdAt}"),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () async {},
+                    onPressed: () async {
+                      bool success = await TaskServices().deleteTask(task.id);
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Task deleted successfully!")),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Failed to delete task.")),
+                        );
+                      }
+                    },
                   ),
                 ),
               );

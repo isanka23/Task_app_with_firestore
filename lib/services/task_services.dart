@@ -22,7 +22,8 @@ class TaskServices {
       final Map<String, dynamic> data = task.toJson();
 
       // add the task to the collection
-      await _taslCollection.add(data);
+      final DocumentReference docRef = await _taslCollection.add(data);
+      await docRef.update({'id': docRef.id});
       return true;
     } catch (e) {
       print("Error adding task: $e");
@@ -42,5 +43,17 @@ class TaskServices {
               )
               .toList(),
         );
+  }
+
+  // delete a task by id
+  Future<bool> deleteTask(String id) async {
+    try {
+      // delete the task document by id
+      await _taslCollection.doc(id).delete();
+      return true;
+    } catch (e) {
+      print("Error deleting task: $e");
+      return false;
+    }
   }
 }
