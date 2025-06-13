@@ -29,4 +29,18 @@ class TaskServices {
       return false;
     }
   }
+
+  // method to get all tasks from firestore
+  Stream<List<TaskModel>> getTask() {
+    return _taslCollection.snapshots().map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => TaskModel.fromJson(
+                  doc.data() as Map<String, dynamic>,
+                  doc.id,
+                ),
+              )
+              .toList(),
+        );
+  }
 }

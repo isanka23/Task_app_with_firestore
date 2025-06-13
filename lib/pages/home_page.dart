@@ -11,7 +11,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _taskNameController = TextEditingController();
 
-
   void showAddTaskDialog() {
     showDialog(
       context: context,
@@ -33,8 +32,9 @@ class _HomePageState extends State<HomePage> {
               child: const Text("Cancel"),
             ),
             TextButton(
-              onPressed: ()async {
-               bool success = await TaskServices().addTask(_taskNameController.text);
+              onPressed: () async {
+                bool success =
+                    await TaskServices().addTask(_taskNameController.text);
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Task added successfully!")),
@@ -58,10 +58,46 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text("Task App with Firestore"),
+        backgroundColor: Colors.blueGrey,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: showAddTaskDialog,
         child: const Icon(Icons.add),
+      ),
+      body: StreamBuilder(
+        stream: TaskServices().getTask(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text("Error fetching tasks"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No tasks found"));
+          }
+
+          final tasks = snapshot.data!;
+          return ListView.builder(
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+              return Card(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  tileColor: Colors.blueGrey[600],
+                  leading: const Icon(Icons.task),
+                  title: Text(task.name),
+                  subtitle: Text("Created at: ${task.createdAt}"),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {},
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
